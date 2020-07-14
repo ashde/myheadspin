@@ -23,6 +23,9 @@ select Distinct(hostname) from DeviceListCache;
 ```
 529 hostnames
 
+
+
+
 `import headspin.model.device_list_cache_model as dlcm`
 
 `a = dlcm.select_devices(dict(device_id=353626070791038))`
@@ -36,3 +39,15 @@ Out[5]:
 
 `a = dlcm.select_devices(dict(device_id="00008030-000D49C81452802E"))`
 `a.devices`
+
+
+# GEOS
+
+import headspin.env
+from headspin.model import device_list_cache_model as dlcm
+devices = dlcm.select_devices(dict(removed=False)).devices
+geos = set([headspin.env.Host.create(device.hostname).natted_subdomain() for device in devices])
+len(geos)
+geos.remove('gb-oxf')
+
+
