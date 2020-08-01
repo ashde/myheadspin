@@ -6,7 +6,7 @@ import argparse
 # Parser for user input
 cli_parser = argparse.ArgumentParser(description='Get the action to be performed.')
 cli_parser.add_argument('-p', '--proxies',  help="Possible optioins:  " + \
-                                                "offline, online, shared, dedicated")
+                                                "offline, online, shared, dedicated, geo")
 cli_parser.add_argument('-o', '--output',  help="Save the output" + \
                                                 " to a file", action="store_true")
 user_args = cli_parser.parse_args()
@@ -36,6 +36,7 @@ def dump_online_hosts(data):
                     else:
                         print('ONLINE Host: {}: {}'.format(geo, host_name))
                         hostnames.append(host_name)
+                        # geos.append(geo)
             except Exception as ex:
                 print('GEO Host data is NULL: {}'.format(geo))
     return hostnames
@@ -88,12 +89,28 @@ def dump_dedicated_hosts(data):
             except Exception as ex:
                 print('GEO Host data is NULL: {}'.format(geo))
     return hostnames
+def dump_all_geos(data):
+    """ Lists all active GEOs """
+
+    for geo, geo_data in data.items():
+        if 'hosts' in geo_data:
+            try:
+                for host_name, host_name_val in geo_data['hosts'].items():
+                    if 'deployed' in host_name_val:
+                        pass
+                    else:
+                        geos.append(geo)
+            except Exception as ex:
+                print('GEO Host data is NULL: {}'.format(geo))
+    return geos
 
 
 if __name__ == "__main__":
     filepath = "~/headspinio/keys/dev/pbox/host_config.yml"
     data = host_config_loader(filepath)
     hostnames = []
+    geos = []
+
 
     if user_args.proxies == 'offline':
         hostnames = dump_offline_hosts(data)
@@ -103,12 +120,21 @@ if __name__ == "__main__":
         hostnames = dump_shared_hosts(data)
     elif user_args.proxies == 'dedicated':
         hostnames = dump_dedicated_hosts(data)
+    elif user_args.proxies == 'geo':
+        geos = dump_all_geos(data)
 
-    for host in sorted(hostnames):
-        print(user_args.proxies + ": " + host)
+    if len(geos) != 0:
+        geos.sort()
+        print(len(set(geos)))
+        print ( "Total GEOS ============" + "\n")
+        print(set(geos))
 
-    if user_args.output:
-        status = user_args.proxies
-        with open(status, "w") as outfile:
-            for host in sorted(hostnames):
-                outfile.write(status + ": " + host + "\n")
+    else:
+        for host in sorted(hostnames):
+            print(user_args.proxies + ": " + host)
+
+        if user_args.output:
+            status = user_args.proxies
+            with open(status, "w") as outfile:
+                for host in sorted(hostnames):
+                    outfile.write(status + ": " + host + "\n")

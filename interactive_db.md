@@ -50,4 +50,7 @@ geos = set([headspin.env.Host.create(device.hostname).natted_subdomain() for dev
 len(geos)
 geos.remove('gb-oxf')
 
-
+>>> from headspin.model import device_list_cache_model as dlcm
+dlcm>>> dlcm.get_devices_for_host('dev-us-pao-0-proxy-26-lin.headspin.io')
+[<DeviceInfo android device_id=0 serial=R3CMA0683DZ hostname=dev-us-pao-0-proxy-26-lin.headspin.io >, <DeviceInfo android device_id=0 serial=RFCN30AFA0J hostname=dev-us-pao-0-proxy-26-lin.headspin.io >]
+>>> 
